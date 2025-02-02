@@ -20,10 +20,11 @@ def mostrar_inicio():
     st.title("Bienvenido al Taller Mecánico")
     st.write("Aquí puedes gestionar tus citas y tus registros para tu servico de Mecanica.")
 
-# Función para mostrar el formulario de registro de usuarios
+# Función para mostrar el formulario de registro
 def formulario_registro():
-    st.title("Formulario de Registro ")
+    st.title("Formulario de Registro")
     with st.form("registro_usuario"):
+
         nombre = st.text_input('Nombre Completo')
         telefono = st.text_input('Teléfono')
         email = st.text_input('Correo Electrónico')
@@ -165,5 +166,5 @@ def mapa_manizales():
     mapa = pdk.Deck(map_style='mapbox://styles/mapbox/streets-v11', initial_view_state=view_state)
 
     # Mostrar el mapa
-    st.title("Mapa de Manizales, Colombia")
+    st.title("Mapa de Manila, Colombia")
     st.pydeck_chart(mapa)
