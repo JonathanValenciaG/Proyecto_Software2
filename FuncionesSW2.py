@@ -67,5 +67,5 @@ def mapa_manizales():
     mapa = pdk.Deck(map_style='mapbox://styles/mapbox/streets-v11', initial_view_state=view_state)
 
     # Mostrar el mapa
-    st.title("Mapa de Manizales, Colombia")
+    st.title("Mapa de Manila, Colombia")
     st.pydeck_chart(mapa)
