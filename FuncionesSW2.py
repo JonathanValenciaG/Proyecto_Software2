@@ -6,7 +6,7 @@ from firebase_admin import db
 import os
 
 # Proporciona la ruta completa al archivo BaseDatos.json
-path = os.path.join(os.path.dirname(__file__), 'Clave2.json')
+path = os.path.join(os.path.dirname(__file__), 'Final.json')
 url = "https://proyectois2-cabb0-default-rtdb.firebaseio.com/"
 
 # Verifica si el archivo existe
@@ -147,6 +147,81 @@ def mostrar_registros():
             st.write('No hay registros disponibles aún.')
     except Exception as e:
         st.error(f'Error al obtener los registros: {e}')
+
+def obtener_talleres():
+    try:
+        talleres_ref = db.reference('talleres').get()
+        if talleres_ref:
+            return list(talleres_ref.keys())
+        else:
+            return []
+    except Exception as e:
+        st.error(f"Error al obtener talleres: {e}")
+        return []
+
+def formulario_agendar_cita():
+    st.title("Agendar Cita en Taller")
+    talleres = obtener_talleres()
+    
+    with st.form("agendar_cita"):
+        nombre = st.text_input('Nombre Completo')
+        telefono = st.text_input('Teléfono')
+        email = st.text_input('Correo Electrónico')
+        taller = st.selectbox('Seleccione un Taller', talleres if talleres else ['No hay talleres disponibles'])
+        fecha = st.date_input('Fecha de la Cita')
+        hora = st.time_input('Hora de la Cita')
+        servicio = st.text_area('Servicio Requerido')
+        
+        # Botón para agendar cita
+        submit = st.form_submit_button('Agendar Cita')
+        if submit:
+            if nombre and telefono and email and taller and servicio:
+                # Guardar los datos en Firebase Realtime Database
+                data = {
+                    "nombre": nombre,
+                    "telefono": telefono,
+                    "email": email,
+                    "taller": taller,
+                    "fecha": str(fecha),
+                    "hora": str(hora),
+                    "servicio": servicio
+                }
+                try:
+                    db.reference(f'citas/{nombre}_{fecha}_{hora}').set(data)
+                    st.success('Cita agendada exitosamente')
+                except Exception as e:
+                    st.error(f'Error al agendar la cita: {e}')
+def obtener_citas():
+    try:
+        citas_ref = db.reference('citas').get()
+        if citas_ref:
+            return citas_ref
+        else:
+            return {}
+    except Exception as e:
+        st.error(f"Error al obtener citas: {e}")
+        return {}
+    
+def mostrar_citas():
+    st.title("Citas Agendadas")
+    citas = obtener_citas()
+    
+    if citas:
+        for clave, cita in citas.items():
+            with st.expander(f"Cita de {cita['nombre']} - {cita['fecha']} {cita['hora']}"):
+                st.write(f"**Teléfono:** {cita['telefono']}")
+                st.write(f"**Email:** {cita['email']}")
+                st.write(f"**Taller:** {cita['taller']}")
+                st.write(f"**Servicio Requerido:** {cita['servicio']}")
+                confirmado = st.checkbox("Confirmar cita", value=cita.get("confirmado", False), key=clave)
+                if confirmado != cita.get("confirmado", False):
+                    try:
+                        db.reference(f'citas/{clave}/confirmado').set(confirmado)
+                        st.success("Estado de confirmación actualizado")
+                    except Exception as e:
+                        st.error(f"Error al actualizar la confirmación: {e}")
+    else:
+        st.write("No hay citas agendadas.")
 
 # Función para mostrar el mapa de Manizales
 def mapa_manizales():
