@@ -168,3 +168,79 @@ def mapa_manizales():
     # Mostrar el mapa
     st.title("Mapa de Manila, Colombia")
     st.pydeck_chart(mapa)
+
+
+# Función para mostrar el formulario de registro de servicios de mecánicos
+def FormularioRegistroServicios():
+    st.title("Registro de Servicios de Mecánico")
+    with st.form("registro_servicios_mecanico"):
+        nombre = st.text_input('Nombre del Mecánico')
+        cedula = st.text_input('Cédula')
+        experiencia = st.text_area('Experiencia')
+        especializacion = st.text_input('Especialización')
+        servicios = st.text_area('Servicios ofrecidos')
+        
+        # Botón para registrar o actualizar servicios
+        submit = st.form_submit_button('Registrar')
+
+        if submit:
+            if nombre and cedula and experiencia and especializacion and servicios:
+                # Guardar los datos en Firebase Realtime Database
+                data = {
+                    "nombre": nombre,
+                    "cedula": cedula,
+                    "experiencia": experiencia,
+                    "especializacion": especializacion,
+                    "servicios": servicios
+                }
+                try:
+                    firebase_db.write_record(f'servicios_mecanicos/{cedula}', data)
+                    st.success('Registro de servicios guardado exitosamente')
+                except Exception as e:
+                    st.error(f'Error al guardar el registro: {e}')
+
+
+    st.title("Actualizar Servicios de Mecánico")
+    cedula = st.text_input("Ingrese la Cédula del Mecánico para actualizar")
+
+    if st.button("Buscar"):
+        if cedula:
+            try:
+                # Buscar en la base de datos
+                mecanico = firebase_db.read_record(f'servicios_mecanicos/{cedula}')
+                if mecanico:
+                    st.success("Mecánico encontrado. Modifique los datos y presione 'Actualizar'.")
+                    
+                    # Cargar datos actuales
+                    nombre = mecanico.get("nombre", "")
+                    experiencia = mecanico.get("experiencia", "")
+                    especializacion = mecanico.get("especializacion", "")
+                    servicios = mecanico.get("servicios", "")
+
+                    # Formulario para actualizar
+                    with st.form("actualizar_servicios"):
+                        nombre = st.text_input('Nombre del Mecánico', nombre)
+                        experiencia = st.text_area('Experiencia', experiencia)
+                        especializacion = st.text_input('Especialización', especializacion)
+                        servicios = st.text_area('Servicios ofrecidos (separados por coma)', servicios)
+
+                        submit = st.form_submit_button('Actualizar')
+
+                        if submit:
+                            data = {
+                                "nombre": nombre,
+                                "cedula": cedula,
+                                "experiencia": experiencia,
+                                "especializacion": especializacion,
+                                "servicios": servicios
+                        
+                            }
+                            try:
+                                firebase_db.write_record(f'servicios_mecanicos/{cedula}', data)
+                                st.success("Servicios actualizados exitosamente")
+                            except Exception as e:
+                                st.error(f"Error al actualizar: {e}")
+                else:
+                    st.warning("No se encontró un mecánico con esa cédula.")
+            except Exception as e:
+                st.error(f"Error al buscar el mecánico: {e}")
