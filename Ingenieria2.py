@@ -7,8 +7,7 @@ if 'user_data' not in st.session_state:
     st.session_state['user_data'] = []
 
 #Pagina destinada a mostrar el inicio de la aplicacion
-page = st.sidebar.radio("Opciones de Registro", ("Inicio", "Formulario de Registro ","Formulario Mecanico","Formulario Taller", "Usuarios Registrados","Agendar Cita Usiario","Ver Citas Agendadas", "Mapa de Manizales"))
-
+page = st.sidebar.radio("Opciones de Registro", ("Inicio", "Formulario de Registro ","Formulario Mecanico","Formulario Taller", "Usuarios Registrados","Agendar Cita Usiario","Ver Citas Agendadas", "Mapa de Manizales","Servicios Mecanico"))
 # Ejecuta la función correspondiente según la opción seleccionada
 if page == "Inicio":
     mostrar_inicio()
@@ -26,3 +25,5 @@ elif page=="Ver Citas Agendadas":
     mostrar_citas()
 elif page == "Mapa de Manizales":
     mapa_manizales()
+elif page =="Servicios Mecanico": 
+    FormularioRegistroServicios()    
