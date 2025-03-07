@@ -319,3 +319,25 @@ def FormularioRegistroServicios():
                     st.warning("No se encontró un mecánico con esa cédula.")
             except Exception as e:
                 st.error(f"Error al buscar el mecánico: {e}")
+                
+def mostrar_citas_por_taller():
+    st.title("Citas por Taller")
+    talleres = obtener_talleres()
+    
+    taller_seleccionado = st.selectbox("Seleccione un Taller", talleres if talleres else ['No hay talleres disponibles'])
+    citas = obtener_citas()
+    
+    if citas:
+        citas_taller = [cita for cita in citas.values() if cita['taller'] == taller_seleccionado]
+        
+        if citas_taller:
+            for cita in citas_taller:
+                with st.expander(f"Cita de {cita['nombre']} - {cita['fecha']} {cita['hora']}"):
+                    st.write(f"**Teléfono:** {cita['telefono']}")
+                    st.write(f"**Email:** {cita['email']}")
+                    st.write(f"**Servicio Requerido:** {cita['servicio']}")
+                    st.write(f"**Estado:** {'Confirmada' if cita.get('confirmado', False) else 'Pendiente'}")
+        else:
+            st.write("No hay citas registradas para este taller.")
+    else:
+        st.write("No hay citas disponibles.")
